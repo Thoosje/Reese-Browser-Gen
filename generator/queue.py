@@ -10,6 +10,7 @@ class Queue():
                 Generator(exe_path)
             )
 
+
     def get_cookie(self, aihToken: str, reese_script: str):
         amount_of_tries: int = 30
         for count in range(amount_of_tries):

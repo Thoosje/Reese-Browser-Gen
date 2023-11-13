@@ -15,6 +15,11 @@ def get_reese_script(script_url: str) -> dict[str, str]:
         'aih': aih,
     }
     
+class WebDriverPatchException(Exception):
+    def __init__(self, message, error_code):
+        super().__init__(message)
+        self.error_code = error_code    
+
 def patch_webdriver(executable_path: str) -> None:
     with io.open(executable_path, "r+b") as fh:
         content = fh.read()
@@ -28,7 +33,7 @@ def patch_webdriver(executable_path: str) -> None:
             )
             new_content = content.replace(target_bytes, new_target_bytes)
             if new_content == content:
-                raise Exception('Failed to patch webdriver, could not find injected codeblock.')
+                raise WebDriverPatchException('Failed to patch webdriver, could not find injected codeblock.', 'ALREADY_PATCHED')
             else:
                 print(
                     "found block:\n%s\nreplacing with:\n%s"

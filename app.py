@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 import time
 import os
 
-from utils import get_reese_script, patch_webdriver
+from utils import get_reese_script, patch_webdriver, WebDriverPatchException
 from generator.queue import Queue
 
 
@@ -12,7 +12,12 @@ cookies_generated = 0
     
 # Init browsers
 exe_path = os.path.abspath('./files/chromedriver.exe')
-#patch_webdriver(exe_path)
+
+# try:
+#     patched = patch_webdriver(exe_path)
+# except WebDriverPatchException as ex:
+#     print(ex.error_code)
+
 queue = Queue(exe_path=exe_path, amount_of_workers=1)
 
 app = Flask(__name__)
@@ -47,9 +52,9 @@ def gen():
         cookie_data = queue.get_cookie(data['aih'], data['script'])
         cookies_generated += 1
         
-        return jsonify({"success": True, "data": cookie_data}), 200
+        return jsonify({"success": True, "reese": cookie_data}), 200
     except Exception as ex:
         return jsonify({"success": False, "message": "Error: %s" % str(ex)}), 200
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
